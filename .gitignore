@@ -1,0 +1,30 @@
+# Gradle caches and build output (root and modules)
+.gradle/
+**/build/
+
+# Android Studio project and user-specific files
+.idea/
+*.iml
+local.properties
+
+# Android native build output
+.externalNativeBuild/
+.cxx/
+captures/
+
+# Local environment and signing credentials
+.env
+.env.*
+!.env.example
+secrets.properties
+key.properties
+keystore.properties
+*.jks
+*.keystore
+*.p12
+*.pfx
+
+# OS files and generated Android packages
+.DS_Store
+*.apk
+*.aab
