@@ -21,23 +21,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.eduvark.app.domain.model.VarkType
-import com.eduvark.app.ui.components.EduField
-import com.eduvark.app.ui.components.EduIcons
-import com.eduvark.app.ui.components.EduPullToRefresh
-import com.eduvark.app.ui.components.EduScreen
-import com.eduvark.app.ui.components.Eyebrow
-import com.eduvark.app.ui.components.FieldLabel
-import com.eduvark.app.ui.components.NoticeCard
-import com.eduvark.app.ui.components.PrimaryButton
-import com.eduvark.app.ui.components.ScrollColumn
-import com.eduvark.app.ui.components.TintTone
-import com.eduvark.app.ui.components.TopicCard
-import com.eduvark.app.ui.theme.EduVarkTheme
-import com.eduvark.app.ui.theme.EduTheme
-import com.eduvark.app.R
-import com.eduvark.app.ui.theme.dimen
-import com.eduvark.app.ui.theme.dimenSp
+import com.mamay.eduvark_newrepo.domain.model.VarkType
+import com.mamay.eduvark_newrepo.ui.components.EduField
+import com.mamay.eduvark_newrepo.ui.components.EduIcons
+import com.mamay.eduvark_newrepo.ui.components.EduPullToRefresh
+import com.mamay.eduvark_newrepo.ui.components.EduScreen
+import com.mamay.eduvark_newrepo.ui.components.Eyebrow
+import com.mamay.eduvark_newrepo.ui.components.FieldLabel
+import com.mamay.eduvark_newrepo.ui.components.NoticeCard
+import com.mamay.eduvark_newrepo.ui.components.PrimaryButton
+import com.mamay.eduvark_newrepo.ui.components.ScrollColumn
+import com.mamay.eduvark_newrepo.ui.components.TintTone
+import com.mamay.eduvark_newrepo.ui.components.TopicCard
+import com.mamay.eduvark_newrepo.ui.theme.EduVarkTheme
+import com.mamay.eduvark_newrepo.ui.theme.EduTheme
+import com.mamay.eduvark_newrepo.R
+import com.mamay.eduvark_newrepo.ui.theme.dimen
+import com.mamay.eduvark_newrepo.ui.theme.dimenSp
 
 @Composable
 fun StudentTopicsScreen(
@@ -63,14 +63,14 @@ fun StudentTopicsScreen(
     ) { padding ->
         val error = state.error
         when {
-            state.isLoading -> com.eduvark.app.ui.components.LoadingBlock(Modifier.padding(padding))
+            state.isLoading -> com.mamay.eduvark_newrepo.ui.components.LoadingBlock(Modifier.padding(padding))
 
             error != null -> Column(
                 modifier = Modifier
                     .padding(padding)
                     .padding(dimen(R.dimen.space_24)),
             ) {
-                com.eduvark.app.ui.components.ErrorBlock(
+                com.mamay.eduvark_newrepo.ui.components.ErrorBlock(
                     message = error,
                     onRetry = viewModel::load,
                 )
@@ -87,77 +87,77 @@ fun StudentTopicsScreen(
                 modifier = Modifier.padding(padding),
             ) {
                 ScrollColumn(spacing = dimen(R.dimen.space_0)) {
-                    if (state.refreshError != null) {
-                        com.eduvark.app.ui.components.NoticeCard(
-                            text = state.refreshError.orEmpty(),
-                            tone = com.eduvark.app.ui.components.TintTone.Danger,
-                        )
-                        Spacer(Modifier.height(dimen(R.dimen.space_16)))
-                    }
-                    Eyebrow(stringResource(R.string.st_topic_class_name))
-                    Spacer(Modifier.height(dimen(R.dimen.space_10)))
-                    Text(text = stringResource(R.string.st_topic_display), style = EduTheme.type.display)
-                    Spacer(Modifier.height(dimen(R.dimen.space_10)))
-                    Text(
-                        text = stringResource(R.string.st_topic_summary, state.topics.size),
-                        style = EduTheme.type.body,
+                if (state.refreshError != null) {
+                    com.mamay.eduvark_newrepo.ui.components.NoticeCard(
+                        text = state.refreshError.orEmpty(),
+                        tone = com.mamay.eduvark_newrepo.ui.components.TintTone.Danger,
                     )
-                    Spacer(Modifier.height(dimen(R.dimen.space_20)))
-                    FieldLabel(stringResource(R.string.st_topic_search_label))
-                    EduField(
-                        value = query,
-                        onValueChange = { query = it },
-                        placeholder = stringResource(R.string.st_topic_search_placeholder),
-                        trailing = {
-                            Icon(
-                                imageVector = EduIcons.Search,
-                                contentDescription = null,
-                                tint = EduTheme.colors.muted,
-                                modifier = Modifier.size(dimen(R.dimen.size_18)),
-                            )
-                        },
-                    )
-
-                    Spacer(Modifier.height(dimen(R.dimen.space_18)))
-                    if (filtered.isEmpty()) {
-                        NoticeCard(
-                            text = stringResource(R.string.st_topic_no_match, query),
-                            tone = TintTone.Neutral,
+                    Spacer(Modifier.height(dimen(R.dimen.space_16)))
+                }
+                Eyebrow(stringResource(R.string.st_topic_class_name))
+                Spacer(Modifier.height(dimen(R.dimen.space_10)))
+                Text(text = stringResource(R.string.st_topic_display), style = EduTheme.type.display)
+                Spacer(Modifier.height(dimen(R.dimen.space_10)))
+                Text(
+                    text = stringResource(R.string.st_topic_summary, state.topics.size),
+                    style = EduTheme.type.body,
+                )
+                Spacer(Modifier.height(dimen(R.dimen.space_20)))
+                FieldLabel(stringResource(R.string.st_topic_search_label))
+                EduField(
+                    value = query,
+                    onValueChange = { query = it },
+                    placeholder = stringResource(R.string.st_topic_search_placeholder),
+                    trailing = {
+                        Icon(
+                            imageVector = EduIcons.Search,
+                            contentDescription = null,
+                            tint = EduTheme.colors.muted,
+                            modifier = Modifier.size(dimen(R.dimen.size_18)),
                         )
-                    } else {
-                        filtered.forEach { topic ->
-                            TopicCard(
-                                orderLabel = stringResource(
-                                    R.string.st_topic_order_label,
-                                    topic.sortOrder.toString().padStart(2, '0'),
-                                ),
-                                title = topic.title,
-                                meta = topic.description?.takeIf { it.isNotBlank() }
-                                    ?: if (kinesthetic) {
-                                        stringResource(R.string.st_topic_meta_kinesthetic)
-                                    } else {
-                                        stringResource(R.string.st_topic_meta_format, varkLabel)
-                                    },
-                                status = when {
-                                    kinesthetic && topic.materialAvailable ->
-                                        stringResource(R.string.st_topic_status_open_case)
+                    },
+                )
 
-                                    kinesthetic -> stringResource(R.string.st_topic_status_case_unavailable)
-                                    topic.materialAvailable ->
-                                        stringResource(R.string.st_topic_status_available, varkLabel)
-
-                                    else -> stringResource(R.string.st_topic_status_unavailable)
-                                },
-                                statusTone = if (topic.materialAvailable) {
-                                    TintTone.Teal
+                Spacer(Modifier.height(dimen(R.dimen.space_18)))
+                if (filtered.isEmpty()) {
+                    NoticeCard(
+                        text = stringResource(R.string.st_topic_no_match, query),
+                        tone = TintTone.Neutral,
+                    )
+                } else {
+                    filtered.forEach { topic ->
+                        TopicCard(
+                            orderLabel = stringResource(
+                                R.string.st_topic_order_label,
+                                topic.sortOrder.toString().padStart(2, '0'),
+                            ),
+                            title = topic.title,
+                            meta = topic.description?.takeIf { it.isNotBlank() }
+                                ?: if (kinesthetic) {
+                                    stringResource(R.string.st_topic_meta_kinesthetic)
                                 } else {
-                                    TintTone.Neutral
+                                    stringResource(R.string.st_topic_meta_format, varkLabel)
                                 },
-                                onClick = { onOpenTopic(topic.id, kinesthetic) },
-                            )
-                            Spacer(Modifier.height(dimen(R.dimen.space_12)))
-                        }
+                            status = when {
+                                kinesthetic && topic.materialAvailable ->
+                                    stringResource(R.string.st_topic_status_open_case)
+
+                                kinesthetic -> stringResource(R.string.st_topic_status_case_unavailable)
+                                topic.materialAvailable ->
+                                    stringResource(R.string.st_topic_status_available, varkLabel)
+
+                                else -> stringResource(R.string.st_topic_status_unavailable)
+                            },
+                            statusTone = if (topic.materialAvailable) {
+                                TintTone.Teal
+                            } else {
+                                TintTone.Neutral
+                            },
+                            onClick = { onOpenTopic(topic.id, kinesthetic) },
+                        )
+                        Spacer(Modifier.height(dimen(R.dimen.space_12)))
                     }
+                }
                 }
             }
         }
@@ -185,7 +185,7 @@ private fun EmptyTopics(
                 .fillMaxWidth()
                 .padding(vertical = dimen(R.dimen.space_8)),
         ) {
-            com.eduvark.app.ui.components.EduCard(
+            com.mamay.eduvark_newrepo.ui.components.EduCard(
                 modifier = Modifier.fillMaxWidth(),
                 containerColor = EduTheme.colors.purpleTint,
             ) {
