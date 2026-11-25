@@ -28,44 +28,44 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.eduvark.app.domain.model.CaseStudy
-import com.eduvark.app.domain.model.SubmissionStatus
-import com.eduvark.app.domain.model.Topic
-import com.eduvark.app.domain.model.UserRole
-import com.eduvark.app.domain.model.VarkType
-import com.eduvark.app.ui.components.AdminBottomBar
-import com.eduvark.app.ui.components.AdminTab
-import com.eduvark.app.ui.components.EduIcons
-import com.eduvark.app.ui.components.EduPullToRefresh
-import com.eduvark.app.ui.components.EduScreen
-import com.eduvark.app.ui.components.Eyebrow
-import com.eduvark.app.ui.components.LecturerBottomBar
-import com.eduvark.app.ui.components.LecturerTab
-import com.eduvark.app.ui.components.StudentBottomBar
-import com.eduvark.app.ui.components.TextLink
-import com.eduvark.app.ui.components.CardEyebrow
-import com.eduvark.app.ui.components.StudentTab
-import com.eduvark.app.ui.components.EduCard
-import com.eduvark.app.ui.components.ErrorBlock
-import com.eduvark.app.ui.components.HeroCard
-import com.eduvark.app.ui.components.LightButton
-import com.eduvark.app.ui.components.LoadingBlock
-import com.eduvark.app.ui.components.NoticeCard
-import com.eduvark.app.ui.components.PrimaryButton
-import com.eduvark.app.ui.components.ScrollColumn
-import com.eduvark.app.ui.components.SectionHeader
-import com.eduvark.app.ui.components.StatCard
-import com.eduvark.app.ui.components.TextLink
-import com.eduvark.app.ui.components.TintTone
-import com.eduvark.app.ui.components.content
-import com.eduvark.app.ui.format.formatCounter
-import com.eduvark.app.ui.format.formatDeadline
+import com.mamay.eduvark_newrepo.domain.model.CaseStudy
+import com.mamay.eduvark_newrepo.domain.model.SubmissionStatus
+import com.mamay.eduvark_newrepo.domain.model.Topic
+import com.mamay.eduvark_newrepo.domain.model.UserRole
+import com.mamay.eduvark_newrepo.domain.model.VarkType
+import com.mamay.eduvark_newrepo.ui.components.AdminBottomBar
+import com.mamay.eduvark_newrepo.ui.components.AdminTab
+import com.mamay.eduvark_newrepo.ui.components.EduIcons
+import com.mamay.eduvark_newrepo.ui.components.EduPullToRefresh
+import com.mamay.eduvark_newrepo.ui.components.EduScreen
+import com.mamay.eduvark_newrepo.ui.components.Eyebrow
+import com.mamay.eduvark_newrepo.ui.components.LecturerBottomBar
+import com.mamay.eduvark_newrepo.ui.components.LecturerTab
+import com.mamay.eduvark_newrepo.ui.components.StudentBottomBar
+import com.mamay.eduvark_newrepo.ui.components.TextLink
+import com.mamay.eduvark_newrepo.ui.components.CardEyebrow
+import com.mamay.eduvark_newrepo.ui.components.StudentTab
+import com.mamay.eduvark_newrepo.ui.components.EduCard
+import com.mamay.eduvark_newrepo.ui.components.ErrorBlock
+import com.mamay.eduvark_newrepo.ui.components.HeroCard
+import com.mamay.eduvark_newrepo.ui.components.LightButton
+import com.mamay.eduvark_newrepo.ui.components.LoadingBlock
+import com.mamay.eduvark_newrepo.ui.components.NoticeCard
+import com.mamay.eduvark_newrepo.ui.components.PrimaryButton
+import com.mamay.eduvark_newrepo.ui.components.ScrollColumn
+import com.mamay.eduvark_newrepo.ui.components.SectionHeader
+import com.mamay.eduvark_newrepo.ui.components.StatCard
+import com.mamay.eduvark_newrepo.ui.components.TextLink
+import com.mamay.eduvark_newrepo.ui.components.TintTone
+import com.mamay.eduvark_newrepo.ui.components.content
+import com.mamay.eduvark_newrepo.ui.format.formatCounter
+import com.mamay.eduvark_newrepo.ui.format.formatDeadline
 import androidx.compose.ui.text.font.FontWeight
-import com.eduvark.app.ui.components.TopicCard
+import com.mamay.eduvark_newrepo.ui.components.TopicCard
 import java.util.Calendar
-import com.eduvark.app.ui.theme.EduTheme
-import com.eduvark.app.R
-import com.eduvark.app.ui.theme.dimen
+import com.mamay.eduvark_newrepo.ui.theme.EduTheme
+import com.mamay.eduvark_newrepo.R
+import com.mamay.eduvark_newrepo.ui.theme.dimen
 
 @Composable
 fun HomeScreen(
@@ -168,24 +168,24 @@ fun HomeScreen(
                 modifier = Modifier.padding(padding),
             ) {
                 ScrollColumn {
-                    if (state.refreshError != null) {
-                        NoticeCard(text = state.refreshError.orEmpty(), tone = TintTone.Danger)
-                        Spacer(Modifier.height(dimen(R.dimen.space_16)))
-                    }
-                    when (user.role) {
-                        UserRole.STUDENT -> StudentHome(state, onOpenStudentTopics)
-                        UserRole.LECTURER -> LecturerHome(
-                            state = state,
-                            onOpenTopics = onOpenLecturerTopics,
-                            onOpenAnalytics = onOpenAnalytics,
-                            onCreateTopic = onCreateTopic,
-                        )
+                if (state.refreshError != null) {
+                    NoticeCard(text = state.refreshError.orEmpty(), tone = TintTone.Danger)
+                    Spacer(Modifier.height(dimen(R.dimen.space_16)))
+                }
+                when (user.role) {
+                    UserRole.STUDENT -> StudentHome(state, onOpenStudentTopics)
+                    UserRole.LECTURER -> LecturerHome(
+                        state = state,
+                        onOpenTopics = onOpenLecturerTopics,
+                        onOpenAnalytics = onOpenAnalytics,
+                        onCreateTopic = onCreateTopic,
+                    )
 
-                        UserRole.ADMIN -> AdminHome(
-                            state = state,
-                            onOpenAccounts = onOpenAdminAccounts,
-                        )
-                    }
+                    UserRole.ADMIN -> AdminHome(
+                        state = state,
+                        onOpenAccounts = onOpenAdminAccounts,
+                    )
+                }
                 }
             }
         }
