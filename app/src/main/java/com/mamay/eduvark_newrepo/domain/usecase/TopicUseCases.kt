@@ -1,0 +1,140 @@
+package com.mamay.eduvark_newrepo.domain.usecase
+
+import com.mamay.eduvark_newrepo.domain.model.Material
+import com.mamay.eduvark_newrepo.domain.model.Topic
+import com.mamay.eduvark_newrepo.domain.model.UploadPayload
+import com.mamay.eduvark_newrepo.domain.model.VarkType
+import com.mamay.eduvark_newrepo.domain.repository.MaterialContentSource
+import com.mamay.eduvark_newrepo.domain.repository.TopicRepository
+import java.io.OutputStream
+import javax.inject.Inject
+
+class GetStudentDashboardUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke() = repository.getStudentDashboard()
+}
+
+class GetTopicsUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(): List<Topic> = repository.listTopics()
+}
+
+class GetTopicUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(topicId: String): Topic = repository.getTopic(topicId)
+}
+
+class GetLecturerTopicUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(topicId: String): Topic =
+        repository.getLecturerTopic(topicId)
+}
+
+class GetMaterialsUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(topicId: String): List<Material> =
+        repository.listMaterials(topicId)
+}
+
+class GetLecturerMaterialsUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(topicId: String): List<Material> =
+        repository.listLecturerMaterials(topicId)
+}
+
+class DownloadMaterialContentUseCase @Inject constructor(
+    private val source: MaterialContentSource,
+) {
+    /** Streaming isi materi ke [target] tanpa menampung seluruh byte di memori. */
+    suspend operator fun invoke(materialId: String, target: OutputStream) =
+        source.stream(materialId, target)
+}
+
+class GetMaterialLinkTargetUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(materialId: String): String =
+        repository.getMaterialLinkTarget(materialId)
+}
+
+class CreateTopicUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(title: String, description: String?): Topic =
+        repository.createTopic(title, description)
+}
+
+class UpdateTopicUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(
+        topicId: String,
+        title: String?,
+        description: String?,
+    ): Topic = repository.updateTopic(topicId, title, description)
+}
+
+class PublishTopicUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(topicId: String): Topic = repository.publishTopic(topicId)
+}
+
+class UnpublishTopicUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(topicId: String): Topic = repository.unpublishTopic(topicId)
+}
+
+class DeleteTopicUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(topicId: String) = repository.deleteTopic(topicId)
+}
+
+class ReorderTopicsUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(topicIds: List<String>) = repository.reorderTopics(topicIds)
+}
+
+class CreateLinkMaterialUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(
+        topicId: String,
+        title: String,
+        vark: VarkType,
+        url: String,
+    ): Material = repository.createLinkMaterial(topicId, title, vark, url)
+}
+
+class UploadMaterialUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(
+        topicId: String,
+        title: String,
+        vark: VarkType,
+        payload: UploadPayload,
+    ): Material = repository.uploadFileMaterial(topicId, title, vark, payload)
+}
+
+class DeleteMaterialUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(materialId: String) = repository.deleteMaterial(materialId)
+}
+
+class ReplaceMaterialFileUseCase @Inject constructor(
+    private val repository: TopicRepository,
+) {
+    suspend operator fun invoke(materialId: String, payload: UploadPayload) =
+        repository.replaceMaterialFile(materialId, payload)
+}
