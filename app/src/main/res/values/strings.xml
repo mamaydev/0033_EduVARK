@@ -1,3 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Global strings only. Each UI module keeps its own file:
+    strings_common.xml, strings_home.xml, strings_student.xml,
+    strings_lecturer_a.xml, strings_lecturer_b.xml, strings_admin.xml
+    (English copies live in values-en/ with the same keys).
+-->
 <resources>
-    <string name="app_name">eduvark-newrepo</string>
+    <string name="app_name">EduVARK</string>
 </resources>
