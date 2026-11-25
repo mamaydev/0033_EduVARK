@@ -2,11 +2,11 @@ package com.mamay.eduvark_newrepo.view.student.topics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eduvark.app.domain.error.AppFailure
-import com.eduvark.app.domain.model.Topic
-import com.eduvark.app.domain.model.VarkType
-import com.eduvark.app.domain.usecase.GetMeUseCase
-import com.eduvark.app.domain.usecase.GetTopicsUseCase
+import com.mamay.eduvark_newrepo.domain.error.AppFailure
+import com.mamay.eduvark_newrepo.domain.model.Topic
+import com.mamay.eduvark_newrepo.domain.model.VarkType
+import com.mamay.eduvark_newrepo.domain.usecase.GetMeUseCase
+import com.mamay.eduvark_newrepo.domain.usecase.GetTopicsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +23,6 @@ data class StudentTopicsUiState(
     val error: String? = null,
     val refreshError: String? = null,
 )
-
 @HiltViewModel
 class StudentTopicsViewModel @Inject constructor(
     private val getTopicsUseCase: GetTopicsUseCase,
