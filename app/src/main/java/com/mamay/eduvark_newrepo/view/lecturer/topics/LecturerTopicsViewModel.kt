@@ -1,0 +1,223 @@
+package com.mamay.eduvark_newrepo.view.lecturer.topics
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.mamay.eduvark_newrepo.domain.error.AppFailure
+import com.mamay.eduvark_newrepo.domain.model.Topic
+import com.mamay.eduvark_newrepo.domain.model.TopicStatus
+import com.mamay.eduvark_newrepo.domain.usecase.CreateTopicUseCase
+import com.mamay.eduvark_newrepo.domain.usecase.DeleteTopicUseCase
+import com.mamay.eduvark_newrepo.domain.usecase.GetTopicsUseCase
+import com.mamay.eduvark_newrepo.domain.usecase.PublishTopicUseCase
+import com.mamay.eduvark_newrepo.domain.usecase.ReorderTopicsUseCase
+import com.mamay.eduvark_newrepo.domain.usecase.UnpublishTopicUseCase
+import com.mamay.eduvark_newrepo.domain.usecase.UpdateTopicUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+data class LecturerTopicsUiState(
+    val isLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
+    val isSaving: Boolean = false,
+    val topics: List<Topic> = emptyList(),
+    val error: String? = null,
+    val actionError: String? = null,
+)
+
+@HiltViewModel
+class LecturerTopicsViewModel @Inject constructor(
+    private val getTopicsUseCase: GetTopicsUseCase,
+    private val createTopicUseCase: CreateTopicUseCase,
+    private val updateTopicUseCase: UpdateTopicUseCase,
+    private val publishTopicUseCase: PublishTopicUseCase,
+    private val unpublishTopicUseCase: UnpublishTopicUseCase,
+    private val deleteTopicUseCase: DeleteTopicUseCase,
+    private val reorderTopicsUseCase: ReorderTopicsUseCase,
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(LecturerTopicsUiState())
+    val state: StateFlow<LecturerTopicsUiState> = _state.asStateFlow()
+
+    private var requestInFlight = false
+
+    init {
+        load()
+    }
+
+    fun load() = fetch(showFullLoading = true)
+
+    fun refresh() = fetch(showFullLoading = false)
+
+    private fun fetch(showFullLoading: Boolean) {
+        if (requestInFlight) return
+        requestInFlight = true
+        viewModelScope.launch {
+            _state.update {
+                if (showFullLoading) {
+                    it.copy(isLoading = true, error = null)
+                } else {
+                    it.copy(isRefreshing = true, error = null)
+                }
+            }
+            try {
+                val topics = getTopicsUseCase()
+                _state.update {
+                    it.copy(isLoading = false, isRefreshing = false, topics = topics)
+                }
+            } catch (error: AppFailure) {
+                _state.update {
+                    if (it.topics.isEmpty()) {
+                        it.copy(isLoading = false, isRefreshing = false, error = error.message)
+                    } else {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            actionError = error.message,
+                        )
+                    }
+                }
+            } catch (error: Exception) {
+                _state.update {
+                    if (it.topics.isEmpty()) {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            error = "Terjadi kesalahan. Coba lagi.",
+                        )
+                    } else {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            actionError = "Terjadi kesalahan. Coba lagi.",
+                        )
+                    }
+                }
+            } finally {
+                requestInFlight = false
+            }
+        }
+    }
+
+    fun create(title: String, description: String) {
+        if (title.trim().isEmpty()) {
+            _state.update { it.copy(actionError = "Judul topik wajib diisi.") }
+            return
+        }
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true, actionError = null) }
+            try {
+                createTopicUseCase(title.trim(), description.trim().ifBlank { null })
+                val topics = getTopicsUseCase()
+                _state.update { it.copy(isSaving = false, topics = topics) }
+            } catch (error: AppFailure) {
+                _state.update { it.copy(isSaving = false, actionError = error.message) }
+            } catch (error: Exception) {
+                _state.update { it.copy(isSaving = false, actionError = "Gagal menyimpan topik.") }
+            }
+        }
+    }
+
+    /**
+     * FR-009 / DEC-002: dosen dapat memperbarui judul dan deskripsi topik yang
+     * sudah ada (PATCH topik dengan ID yang sama), lalu status publikasi
+     * diterapkan terpisah hanya bila berubah. Data akademik yang sudah ada
+     * (submission/nilai) tidak tersentuh; proteksi arsip tetap di backend.
+     */
+    fun updateTopic(
+        topicId: String,
+        title: String,
+        description: String,
+        published: Boolean,
+    ) {
+        if (title.trim().isEmpty()) {
+            _state.update { it.copy(actionError = "Judul topik wajib diisi.") }
+            return
+        }
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true, actionError = null) }
+            try {
+                val current = _state.value.topics.firstOrNull { it.id == topicId }
+                updateTopicUseCase(
+                    topicId = topicId,
+                    title = title.trim(),
+                    description = description.trim().ifBlank { null },
+                )
+                if (current != null) {
+                    val shouldPublish = published && current.status != TopicStatus.PUBLISHED
+                    val shouldUnpublish = !published && current.status != TopicStatus.DRAFT
+                    if (shouldPublish) publishTopicUseCase(topicId)
+                    if (shouldUnpublish) unpublishTopicUseCase(topicId)
+                }
+                val topics = getTopicsUseCase()
+                _state.update { it.copy(isSaving = false, topics = topics) }
+            } catch (error: AppFailure) {
+                _state.update { it.copy(isSaving = false, actionError = error.message) }
+            } catch (error: Exception) {
+                _state.update {
+                    it.copy(isSaving = false, actionError = "Gagal menyimpan perubahan topik.")
+                }
+            }
+        }
+    }
+
+    fun setPublished(topicId: String, published: Boolean) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true, actionError = null) }
+            try {
+                if (published) publishTopicUseCase(topicId) else unpublishTopicUseCase(topicId)
+                val topics = getTopicsUseCase()
+                _state.update { it.copy(isSaving = false, topics = topics) }
+            } catch (error: AppFailure) {
+                _state.update { it.copy(isSaving = false, actionError = error.message) }
+            } catch (error: Exception) {
+                _state.update { it.copy(isSaving = false, actionError = "Gagal mengubah status.") }
+            }
+        }
+    }
+
+    fun delete(topicId: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true, actionError = null) }
+            try {
+                deleteTopicUseCase(topicId)
+                val topics = getTopicsUseCase()
+                _state.update { it.copy(isSaving = false, topics = topics) }
+            } catch (error: AppFailure) {
+                _state.update { it.copy(isSaving = false, actionError = error.message) }
+            } catch (error: Exception) {
+                _state.update { it.copy(isSaving = false, actionError = "Gagal menghapus topik.") }
+            }
+        }
+    }
+
+    fun move(index: Int, delta: Int) {
+        val topics = _state.value.topics.toMutableList()
+        val target = index + delta
+        if (index !in topics.indices || target !in topics.indices) return
+        val moved = topics.removeAt(index)
+        topics.add(target, moved)
+        _state.update { it.copy(topics = topics, isSaving = true, actionError = null) }
+
+        viewModelScope.launch {
+            try {
+                reorderTopicsUseCase(topics.map { it.id })
+                _state.update { it.copy(isSaving = false) }
+            } catch (error: AppFailure) {
+                _state.update { it.copy(isSaving = false, actionError = error.message) }
+                load()
+            } catch (error: Exception) {
+                _state.update { it.copy(isSaving = false, actionError = "Gagal mengubah urutan.") }
+                load()
+            }
+        }
+    }
+
+    fun clearActionError() {
+        _state.update { it.copy(actionError = null) }
+    }
+}
