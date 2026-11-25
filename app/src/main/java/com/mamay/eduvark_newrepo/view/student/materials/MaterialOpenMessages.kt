@@ -1,7 +1,7 @@
 package com.mamay.eduvark_newrepo.view.student.materials
 
-import com.eduvark.app.R
-import com.eduvark.app.domain.model.MaterialOpenFailure
+import com.mamay.eduvark_newrepo.R
+import com.mamay.eduvark_newrepo.domain.model.MaterialOpenFailure
 
 /** Pemetaan kegagalan buka materi ke string milik Paket 2. */
 fun materialOpenFailureText(failure: MaterialOpenFailure): Int = when (failure) {
