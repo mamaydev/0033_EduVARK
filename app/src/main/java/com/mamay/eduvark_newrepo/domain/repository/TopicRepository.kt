@@ -1,0 +1,54 @@
+package com.mamay.eduvark_newrepo.domain.repository
+
+import com.mamay.eduvark_newrepo.domain.model.FileDeletionStatus
+import com.mamay.eduvark_newrepo.domain.model.FileReplacementResult
+import com.mamay.eduvark_newrepo.domain.model.Material
+import com.mamay.eduvark_newrepo.domain.model.StudentDashboard
+import com.mamay.eduvark_newrepo.domain.model.Topic
+import com.mamay.eduvark_newrepo.domain.model.UploadPayload
+import com.mamay.eduvark_newrepo.domain.model.VarkType
+
+interface TopicRepository {
+    suspend fun getStudentDashboard(): StudentDashboard
+    suspend fun listTopics(): List<Topic>
+    suspend fun getTopic(topicId: String): Topic
+    suspend fun getLecturerTopic(topicId: String): Topic
+    suspend fun listMaterials(topicId: String): List<Material>
+    suspend fun listLecturerMaterials(topicId: String): List<Material>
+
+    /** Unduh isi berkas materi lewat alamat tetap EduVARK (otorisasi per permintaan). */
+    suspend fun downloadMaterialContent(materialId: String): ByteArray
+
+    /** Ambil tujuan tautan eksternal setelah backend memeriksa izin terkini. */
+    suspend fun getMaterialLinkTarget(materialId: String): String
+
+    suspend fun createTopic(title: String, description: String?): Topic
+    suspend fun updateTopic(topicId: String, title: String?, description: String?): Topic
+    suspend fun publishTopic(topicId: String): Topic
+    suspend fun unpublishTopic(topicId: String): Topic
+    suspend fun deleteTopic(topicId: String)
+    suspend fun reorderTopics(topicIds: List<String>)
+
+    suspend fun createLinkMaterial(
+        topicId: String,
+        title: String,
+        vark: VarkType,
+        url: String,
+    ): Material
+
+    suspend fun uploadFileMaterial(
+        topicId: String,
+        title: String,
+        vark: VarkType,
+        payload: UploadPayload,
+    ): Material
+
+    /** Hapus materi; hasil menunjukkan status penghapusan objek penyimpanan. */
+    suspend fun deleteMaterial(materialId: String): FileDeletionStatus
+
+    /** Ganti berkas pada materi FILE yang sama tanpa mengubah judul/VARK. */
+    suspend fun replaceMaterialFile(
+        materialId: String,
+        payload: UploadPayload,
+    ): FileReplacementResult
+}
