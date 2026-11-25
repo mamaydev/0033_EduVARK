@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -20,19 +23,45 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Android emulator loopback alias; do not hardcode a LAN IP here.
+            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:3000/api/v1/\"")
+            // Runtime override (server settings screen / api_base_url intent extra).
+            buildConfigField("boolean", "ALLOW_API_BASE_URL_OVERRIDE", "true")
+        }
         release {
             optimization {
                 enable = false
             }
+            buildConfigField(
+                "String",
+                "API_BASE_URL",
+                "\"https://pam.sequein.my.id/api/v1/\"",
+            )
+            buildConfigField("boolean", "ALLOW_API_BASE_URL_OVERRIDE", "false")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+ksp {
+    arg("correctErrorTypes", "true")
 }
 
 dependencies {
